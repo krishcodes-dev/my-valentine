@@ -1,0 +1,194 @@
+.wrapper {
+    width: 280px;
+    /* Scaled down slightly for mobile */
+    position: relative;
+}
+
+.envelope {
+    width: 200px;
+    height: 100px;
+    background: #ddd;
+    box-shadow:
+        0 0 1px rgba(0, 0, 0, 0.5),
+        0 1px 3px rgba(0, 0, 0, 0.25);
+    position: relative;
+    perspective: 800px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.envelope:hover {
+    transform: scale(1.05);
+}
+
+.envelope:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border: 0 solid rgba(0, 0, 0, 0.25);
+    border-width: 45px 100px;
+    border-top-color: transparent;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.flap {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    border: 0 solid transparent;
+    border-width: 50px 100px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.flap.front {
+    border-left-color: #eee;
+    border-right-color: #eee;
+    border-bottom-color: #ccc;
+    z-index: 3;
+}
+
+.flap.front:after {
+    content: '';
+    width: 100%;
+    height: 0;
+    position: absolute;
+    left: -100px;
+    bottom: -50px;
+    border: 0 solid transparent;
+    border-width: 49px 100px;
+    border-bottom-color: #eee;
+}
+
+.flap.top {
+    border-top-width: 55px;
+    border-top-color: #aaa;
+    z-index: 3;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    transform-origin: top;
+    perspective: 800px;
+    transform-style: preserve-3d;
+}
+
+.envelope.open .flap.top {
+    animation-name: flip;
+}
+
+.flap.top:after {
+    content: '';
+    position: absolute;
+    left: -100px;
+    /* border-left-width */
+    top: -55px;
+    /* border-top-width */
+    width: 100%;
+    height: 0;
+    border: 0 solid transparent;
+    border-width: 54px 100px;
+    border-top-color: #eee;
+}
+
+.letter {
+    position: absolute;
+    width: 194px;
+    height: 84px;
+    background: #fff;
+    top: 8px;
+    left: 3px;
+    border: 1px solid #ccc;
+    z-index: 1;
+    animation-duration: 2s;
+    animation-delay: 1.5s;
+    animation-fill-mode: forwards;
+    transform-style: preserve-3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 10px;
+    /* Small text for folded letter */
+    color: #333;
+    overflow: hidden;
+}
+
+.envelope.open .letter {
+    animation-name: remove;
+}
+
+.letter:before,
+.letter:after {
+    content: '';
+    position: absolute;
+    width: 192px;
+    height: 75%;
+    left: -1px;
+    background: #fff;
+    border: 1px solid #ccc;
+    animation-duration: 1s;
+    animation-delay: 4s;
+    animation-fill-mode: forwards;
+    transform-origin: top;
+    transform-style: preserve-3d;
+    transform: rotateX(10deg);
+}
+
+.letter:before {
+    z-index: 1;
+}
+
+.envelope.open .letter:before {
+    animation-name: foldUp;
+}
+
+.letter:after {
+    animation-delay: 5s;
+    animation-fill-mode: forwards;
+    transform-origin: bottom;
+    transform: rotateX(-5deg);
+    bottom: 0;
+}
+
+.envelope.open .letter:after {
+    animation-name: foldDown;
+}
+
+@keyframes flip {
+    100% {
+        transform: rotateX(180deg);
+        z-index: 1;
+    }
+}
+
+@keyframes remove {
+    50% {
+        top: -120px;
+    }
+
+    100% {
+        top: 8px;
+        z-index: 3;
+        transform: scale(1.5);
+        /* Scale up slightly when readable */
+    }
+}
+
+@keyframes foldUp {
+    from {}
+
+    to {
+        transform: rotateX(140deg);
+    }
+}
+
+@keyframes foldDown {
+    from {}
+
+    to {
+        transform: rotateX(-140deg);
+    }
+}

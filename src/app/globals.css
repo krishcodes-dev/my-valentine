@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-romantic-dark: #1a0505;
+  --color-romantic-red: #e11d48;
+  --color-romantic-pink: #fbcfe8;
+  --color-romantic-light: #fff1f2;
+  
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+@layer base {
+  body {
+    @apply bg-romantic-dark text-romantic-light overflow-x-hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
