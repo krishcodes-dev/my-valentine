@@ -1,9 +1,9 @@
-export const ANNIVERSARY_DATE = "220823"; // Placeholder: DDMMYYYY
+export const ANNIVERSARY_DATE = "220823"; // Placeholder: DDMMYY
 
 export const PASSWORD_HINTS = [
     "It's a very special day...",
     "Think about when we first met (or started dating)...",
-    "Format is DDMMYYYY...",
+    "Format is DDMMYY...",
     "Okay, it's literally 220823 bruh"
 ];
 

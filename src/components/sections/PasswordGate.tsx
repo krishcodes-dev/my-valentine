@@ -93,7 +93,7 @@ export default function PasswordGate({ onUnlock }: PasswordGateProps) {
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="DDMMYYYY"
+                                    placeholder="DDMMYY"
                                     className={clsx(
                                         "w-full px-6 py-4 text-center bg-black/30 border-2 rounded-full outline-none transition-all duration-300 placeholder:text-white/20",
                                         error ? "border-red-500/50" : "border-romantic-red/30 focus:border-romantic-red"

@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { Lock, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function NextDayLock() {
+interface NextDayLockProps {
+    unlockDate?: string; // ISO string
+}
+
+export default function NextDayLock({ unlockDate = "2026-02-09T00:00:00+05:30" }: NextDayLockProps) {
     const [timeLeft, setTimeLeft] = useState<{
         days: number;
         hours: number;
@@ -14,9 +18,8 @@ export default function NextDayLock() {
     }>({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false });
 
     useEffect(() => {
-        // Target: Feb 08 2026 00:00:00 IST (Indian Standard Time)
-        // IST is UTC+5:30
-        const targetDate = new Date("2026-02-08T00:00:00+05:30").getTime();
+        // Target Date
+        const targetDate = new Date(unlockDate).getTime();
 
         const updateTimer = () => {
             const now = new Date().getTime();

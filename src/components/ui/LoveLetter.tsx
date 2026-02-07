@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./love-letter.module.css";
 import { motion } from "framer-motion";
+import { Mail } from "lucide-react";
 
 export default function LoveLetter() {
     const [isOpen, setIsOpen] = useState(false);
@@ -41,9 +42,10 @@ export default function LoveLetter() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1 }}
-                        className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/50 text-xs italic whitespace-nowrap"
+                        className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/50 text-xs italic whitespace-nowrap flex items-center gap-2"
                     >
-                        Read my letter 💌
+                        <span>Read my letter</span>
+                        <Mail className="w-3 h-3" />
                     </motion.div>
                 )}
             </div>

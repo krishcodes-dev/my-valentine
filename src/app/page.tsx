@@ -7,12 +7,15 @@ import WeekIntro from "@/components/sections/WeekIntro";
 import RoseDay from "@/components/sections/RoseDay";
 import NextDayLock from "@/components/sections/NextDayLock";
 import IntroSequence from "@/components/sections/IntroSequence";
+import ProposeDay from "@/components/sections/ProposeDay";
 import MusicPlayer from "@/components/ui/MusicPlayer";
+import DaysNav from "@/components/ui/DaysNav";
 import { motion } from "framer-motion"; // Added for motion.div
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
-  // States: 'LOCKED' | 'INTRO' | 'MAIN'
-  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN'>('LOCKED');
+  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE'
+  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE'>('LOCKED');
 
   // Removed localStorage check effectively forcing password on every reload
   useEffect(() => {
@@ -28,9 +31,28 @@ export default function Home() {
     setViewState('MAIN');
   };
 
+  const handleNav = (day: number) => {
+    if (day === 1) setViewState('MAIN');
+    if (day === 2) setViewState('DAY2');
+  };
+
+  const getCurrentDay = () => {
+    if (viewState === 'MAIN') return 1;
+    if (viewState === 'DAY2' || viewState === 'DAY2_COMPLETE') return 2;
+    return 1;
+  };
+
   return (
     <main className="relative min-h-screen bg-romantic-dark text-romantic-light selection:bg-romantic-red/30">
-      <MusicPlayer />
+      {/* Music Player - Only for Day 1 */}
+      {(viewState === 'LOCKED' || viewState === 'INTRO' || viewState === 'MAIN') && (
+        <MusicPlayer />
+      )}
+
+      {/* Show Nav only when unlocked */}
+      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE') && (
+        <DaysNav currentDay={getCurrentDay()} onNavigate={handleNav} />
+      )}
 
       {viewState === 'LOCKED' && (
         <PasswordGate onUnlock={handleUnlock} />
@@ -52,12 +74,46 @@ export default function Home() {
             <WeekIntro />
           </div>
 
-          <div id="rose-day" className="min-h-screen">
+          <div id="rose-day" className="min-h-screen relative">
             <RoseDay />
+            {/* Day 2 Trigger - Visible at mid-right of the final screen */}
+            <div className="absolute bottom-[50vh] right-4 md:right-10 z-[60] translate-y-1/2">
+              <motion.button
+                whileHover={{ scale: 1.05, x: 5 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, x: 50, filter: "blur(10px)" }}
+                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                viewport={{ margin: "-100px", once: true }}
+                transition={{ duration: 2.5, ease: "easeOut", delay: 0.5 }}
+                onClick={() => setViewState('DAY2')}
+                className="group flex items-center gap-3 pl-6 pr-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-white/90 hover:bg-white/10 hover:border-white/30 transition-all shadow-[0_0_30px_rgba(225,29,72,0.3)] hover:shadow-[0_0_50px_rgba(225,29,72,0.5)]"
+              >
+                <span className="font-serif tracking-[0.2em] uppercase text-sm">Day 02</span>
+                <div className="w-8 h-8 rounded-full bg-romantic-red flex items-center justify-center group-hover:bg-red-500 transition-colors">
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </div>
+              </motion.button>
+            </div>
           </div>
-
-          <NextDayLock />
         </motion.div>
+      )}
+
+      {viewState === 'DAY2' && (
+        <motion.div
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "-100%" }}
+          transition={{ type: "spring", damping: 20 }}
+          className="absolute inset-0 z-50 bg-romantic-dark"
+        >
+          <ProposeDay onComplete={() => setViewState('DAY2_COMPLETE')} />
+        </motion.div>
+      )}
+
+      {viewState === 'DAY2_COMPLETE' && (
+        <div className="flex items-center justify-center h-screen bg-romantic-dark">
+          <NextDayLock unlockDate="2026-02-09T00:00:00+05:30" />
+        </div>
       )}
     </main>
   );

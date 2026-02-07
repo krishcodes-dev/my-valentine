@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { clsx } from "clsx";
+import HeartCursorTrail from "@/components/ui/HeartCursorTrail";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -32,6 +33,7 @@ export default function RootLayout({
           "antialiased bg-romantic-dark text-romantic-light font-sans"
         )}
       >
+        <HeartCursorTrail />
         {/* Desktop View - Hidden on mobile */}
         <div className="hidden md:block min-h-screen">
           {children}
@@ -42,7 +44,7 @@ export default function RootLayout({
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 animate-bounce">
             <span className="text-2xl">💻</span>
           </div>
-          <h1 className="text-3xl font-serif text-romantic-red font-bold">Hold on... ✋</h1>
+          <h1 className="text-3xl font-serif text-romantic-red font-bold">Hold on lazy bear...</h1>
           <p className="text-white/80 text-lg leading-relaxed font-light">
             This surprise is designed specially for a larger screen.
           </p>

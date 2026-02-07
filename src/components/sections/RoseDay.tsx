@@ -60,7 +60,7 @@ export default function RoseDay() {
                 {/* Flower Bed Background (Bottom-most layer) */}
                 <motion.div
                     style={{ opacity: flowerGridOpacity }}
-                    className="absolute -bottom-5 w-full z-30 pointer-events-none"
+                    className="absolute -bottom-5 w-full z-30 pointer-events-none rounded-t-[100%] overflow-hidden"
                 >
                     <img
                         src="/flower-bed.png"
