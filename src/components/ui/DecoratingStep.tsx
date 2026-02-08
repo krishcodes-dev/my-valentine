@@ -238,11 +238,64 @@ export default function DecoratingStep({ onComplete }: DecoratingStepProps) {
                             className="relative w-full h-full flex flex-col items-center justify-center"
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <motion.img
                                 src="/chocolate.png"
                                 alt="Your Perfect Chocolate"
-                                className="w-[80%] h-[80%] object-contain drop-shadow-2xl"
+                                className="w-[80%] h-[80%] object-contain drop-shadow-2xl cursor-pointer"
+                                whileHover={{
+                                    scale: 1.05,
+                                    rotateX: 5,
+                                    rotateY: 5,
+                                    filter: "drop-shadow(0px 20px 30px rgba(0,0,0,0.5))"
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => {
+                                    const ingredientLabels = addedIngredients.map(id => INGREDIENTS.find(i => i.id === id)?.label).join(", ");
+                                    const message = `I made us a virtual chocolate with ${ingredientLabels}. Now you owe me real chocolates! Deal? 😌`;
+                                    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
+                                    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                                }}
                             />
+
+                            {/* Click Indication */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 2, duration: 1 }}
+                                className="absolute bottom-1/4 right-[10%] md:right-[20%] pointer-events-none flex flex-col items-center gap-2"
+                            >
+                                <motion.div
+                                    animate={{ x: [-5, 0, -5], y: [-5, 0, -5] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                    <span className="text-romantic-red font-serif italic text-lg md:text-xl drop-shadow-md bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/20">
+                                        Click me
+                                    </span>
+                                </motion.div>
+                                {/* Arrow pointing top-left towards chocolate */}
+                                <svg width="60" height="60" viewBox="0 0 100 100" className="opacity-80 -rotate-12 translate-x-[-20px] translate-y-[-10px]">
+                                    <motion.path
+                                        d="M80,80 Q50,80 30,40"
+                                        fill="none"
+                                        stroke="white"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        initial={{ pathLength: 0 }}
+                                        animate={{ pathLength: 1 }}
+                                        transition={{ delay: 2.5, duration: 1 }}
+                                    />
+                                    <motion.path
+                                        d="M25,50 L30,40 L45,45"
+                                        fill="none"
+                                        stroke="white"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        initial={{ pathLength: 0 }}
+                                        animate={{ pathLength: 1 }}
+                                        transition={{ delay: 3.5, duration: 0.5 }}
+                                    />
+                                </svg>
+                            </motion.div>
 
                         </motion.div>
                     )}
