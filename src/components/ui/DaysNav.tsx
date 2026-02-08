@@ -11,7 +11,7 @@ interface DaysNavProps {
 const DAYS = [
     { id: 1, label: "Rose Day", locked: false },
     { id: 2, label: "Propose Day", locked: false },
-    { id: 3, label: "Chocolate Day", locked: true },
+    { id: 3, label: "Chocolate Day", locked: false },
     { id: 4, label: "Teddy Day", locked: true },
     { id: 5, label: "Promise Day", locked: true },
     { id: 6, label: "Hug Day", locked: true },

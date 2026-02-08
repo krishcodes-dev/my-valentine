@@ -201,6 +201,32 @@ export default function ProposeScene({ onComplete }: ProposeSceneProps) {
                                 {showFinalMessage ? "I love you <3" : "I love you bae"}
                             </motion.p>
                         </AnimatePresence>
+
+                        {/* Day 03 Button */}
+                        <AnimatePresence>
+                            {showFinalMessage && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 50 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2, duration: 1 }}
+                                    className="absolute -bottom-56 pointer-events-auto"
+                                >
+                                    <button
+                                        onClick={onComplete} // Will trigger transition to next day
+                                        className="group flex items-center gap-3 pl-6 pr-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-white/90 hover:bg-white/10 hover:border-white/30 transition-all shadow-[0_0_30px_rgba(225,29,72,0.3)] hover:shadow-[0_0_50px_rgba(225,29,72,0.5)]"
+                                        style={{ transform: "translateX(5px) scale(1.05)" }}
+                                    >
+                                        <span className="font-serif tracking-[0.2em] uppercase text-sm">Day 03</span>
+                                        <div className="w-8 h-8 rounded-full bg-romantic-red flex items-center justify-center group-hover:bg-red-500 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right w-4 h-4 text-white" aria-hidden="true">
+                                                <path d="M5 12h14"></path>
+                                                <path d="m12 5 7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 </div>
             )}

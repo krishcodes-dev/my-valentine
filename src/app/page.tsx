@@ -10,12 +10,13 @@ import IntroSequence from "@/components/sections/IntroSequence";
 import ProposeDay from "@/components/sections/ProposeDay";
 import MusicPlayer from "@/components/ui/MusicPlayer";
 import DaysNav from "@/components/ui/DaysNav";
+import ChocolateDay from "@/components/sections/ChocolateDay";
 import { motion } from "framer-motion"; // Added for motion.div
 import { ArrowRight } from "lucide-react";
 
 export default function Home() {
-  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE'
-  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE'>('LOCKED');
+  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3'
+  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3'>('DAY3');
 
   // Removed localStorage check effectively forcing password on every reload
   useEffect(() => {
@@ -34,11 +35,13 @@ export default function Home() {
   const handleNav = (day: number) => {
     if (day === 1) setViewState('MAIN');
     if (day === 2) setViewState('DAY2');
+    if (day === 3) setViewState('DAY3');
   };
 
   const getCurrentDay = () => {
     if (viewState === 'MAIN') return 1;
     if (viewState === 'DAY2' || viewState === 'DAY2_COMPLETE') return 2;
+    if (viewState === 'DAY3') return 3;
     return 1;
   };
 
@@ -50,7 +53,7 @@ export default function Home() {
       )}
 
       {/* Show Nav only when unlocked */}
-      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE') && (
+      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE' || viewState === 'DAY3') && (
         <DaysNav currentDay={getCurrentDay()} onNavigate={handleNav} />
       )}
 
@@ -77,7 +80,7 @@ export default function Home() {
           <div id="rose-day" className="min-h-screen relative">
             <RoseDay />
             {/* Day 2 Trigger - Visible at mid-right of the final screen */}
-            <div className="absolute bottom-[50vh] right-4 md:right-10 z-[60] translate-y-1/2">
+            <div className="absolute bottom-[20vh] md:bottom-[50vh] right-4 md:right-10 z-[60] translate-y-1/2">
               <motion.button
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -106,14 +109,25 @@ export default function Home() {
           transition={{ type: "spring", damping: 20 }}
           className="absolute inset-0 z-50 bg-romantic-dark"
         >
-          <ProposeDay onComplete={() => setViewState('DAY2_COMPLETE')} />
+          <ProposeDay onComplete={() => setViewState('DAY3')} />
         </motion.div>
       )}
 
       {viewState === 'DAY2_COMPLETE' && (
-        <div className="flex items-center justify-center h-screen bg-romantic-dark">
-          <NextDayLock unlockDate="2026-02-09T00:00:00+05:30" />
-        </div>
+        // Deprecated state, flow moves to DAY3 now
+        <></>
+      )}
+
+      {viewState === 'DAY3' && (
+        <motion.div
+          key="day3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 bg-romantic-dark"
+        >
+          <ChocolateDay />
+        </motion.div>
       )}
     </main>
   );

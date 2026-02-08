@@ -207,6 +207,16 @@ export default function MazeGame({ difficulty, onComplete }: MazeGameProps) {
             </p>
 
 
+            {/* Developer Bypass */}
+            <button
+                onClick={() => {
+                    stopSound();
+                    onComplete();
+                }}
+                className="mt-4 text-[10px] text-zinc-700 hover:text-red-500 transition-colors uppercase tracking-widest border border-zinc-800 hover:border-red-900 px-3 py-1 rounded"
+            >
+                [Dev Bypass]
+            </button>
         </div>
     );
 }
