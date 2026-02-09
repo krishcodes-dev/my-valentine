@@ -13,8 +13,8 @@ export default function RetroGridRun() {
         if (!c) return;
 
         const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas!.width = window.innerWidth;
+            canvas!.height = window.innerHeight;
         }
         resize();
         window.addEventListener('resize', resize);
@@ -31,7 +31,7 @@ export default function RetroGridRun() {
 
         function updateGradient() {
             // Re-create gradient on resize or init
-            grad = c!.createLinearGradient(0, canvas.height, 0, horizonY);
+            grad = c!.createLinearGradient(0, canvas!.height, 0, horizonY);
             // Purple-magenta at bottom, fading to transparent at horizon
             grad.addColorStop(0, "rgba(236, 72, 153, 0.8)"); // Pink/Magenta
             grad.addColorStop(0.5, "rgba(168, 85, 247, 0.4)"); // Purple
@@ -109,9 +109,9 @@ export default function RetroGridRun() {
         // Create lines spanning wider than screen to cover perspective
         const initVerticals = () => {
             VerticalArray.length = 0;
-            const interval = canvas.width / 15;
-            let cross = -canvas.width; // Start far left
-            const limit = canvas.width * 2; // End far right
+            const interval = canvas!.width / 15;
+            let cross = -canvas!.width; // Start far left
+            const limit = canvas!.width * 2; // End far right
 
             while (cross < limit) {
                 VerticalArray.push(new Vertical(cross));
@@ -130,7 +130,7 @@ export default function RetroGridRun() {
             animationId = requestAnimationFrame(animate);
 
             // Clear with slight trail or just clear
-            c.clearRect(0, 0, canvas.width, canvas.height);
+            c!.clearRect(0, 0, canvas!.width, canvas!.height);
 
             // Update Grid
             // We need to re-create gradient to match canvas size if updated? 
@@ -143,18 +143,18 @@ export default function RetroGridRun() {
             for (let i = 0; i < HorizontalArray.length; i++) {
                 HorizontalArray[i].update();
                 // Remove if off screen
-                if (HorizontalArray[i].y >= canvas.height) {
+                if (HorizontalArray[i].y >= canvas!.height) {
                     HorizontalArray.splice(i, 1);
                     i--;
                 }
             }
 
             // Optional: Horizon Glow
-            c.shadowBlur = 20;
-            c.shadowColor = "#d946ef";
-            c.fillStyle = "rgba(0,0,0,1)";
+            c!.shadowBlur = 20;
+            c!.shadowColor = "#d946ef";
+            c!.fillStyle = "rgba(0,0,0,1)";
             // Mask top half (sky)
-            c.fillRect(0, 0, canvas.width, horizonY);
+            c!.fillRect(0, 0, canvas!.width, horizonY);
             c.shadowBlur = 0;
         }
 
