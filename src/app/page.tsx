@@ -13,10 +13,13 @@ import DaysNav from "@/components/ui/DaysNav";
 import ChocolateDay from "@/components/sections/ChocolateDay";
 import { motion } from "framer-motion"; // Added for motion.div
 import { ArrowRight } from "lucide-react";
+import TeddyDay from "@/components/sections/TeddyDay";
 
 export default function Home() {
-  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3'
-  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3'>('DAY3');
+  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5'
+  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5'>('DAY3');
+  // State to hide nav during arcade game
+  const [hideNav, setHideNav] = useState(false);
 
   // Removed localStorage check effectively forcing password on every reload
   useEffect(() => {
@@ -36,12 +39,16 @@ export default function Home() {
     if (day === 1) setViewState('MAIN');
     if (day === 2) setViewState('DAY2');
     if (day === 3) setViewState('DAY3');
+    if (day === 4) setViewState('DAY4');
+    if (day === 5) setViewState('DAY5');
   };
 
   const getCurrentDay = () => {
     if (viewState === 'MAIN') return 1;
     if (viewState === 'DAY2' || viewState === 'DAY2_COMPLETE') return 2;
     if (viewState === 'DAY3') return 3;
+    if (viewState === 'DAY4') return 4;
+    if (viewState === 'DAY5') return 5;
     return 1;
   };
 
@@ -52,8 +59,8 @@ export default function Home() {
         <MusicPlayer />
       )}
 
-      {/* Show Nav only when unlocked */}
-      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE' || viewState === 'DAY3') && (
+      {/* Show Nav only when unlocked and not explicitly hidden */}
+      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE' || viewState === 'DAY3' || viewState === 'DAY4' || viewState === 'DAY5') && !hideNav && (
         <DaysNav currentDay={getCurrentDay()} onNavigate={handleNav} />
       )}
 
@@ -126,7 +133,31 @@ export default function Home() {
           exit={{ opacity: 0 }}
           className="absolute inset-0 z-50 bg-romantic-dark"
         >
-          <ChocolateDay />
+          <ChocolateDay onComplete={() => setViewState('DAY4')} />
+        </motion.div>
+      )}
+
+      {viewState === 'DAY4' && (
+        <motion.div
+          key="day4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 bg-romantic-dark"
+        >
+          <TeddyDay onHideNav={setHideNav} onComplete={() => setViewState('DAY5')} />
+        </motion.div>
+      )}
+
+      {viewState === 'DAY5' && (
+        <motion.div
+          key="day5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 bg-romantic-dark"
+        >
+          <NextDayLock unlockDate="2026-02-11T00:00:00+05:30" />
         </motion.div>
       )}
     </main>

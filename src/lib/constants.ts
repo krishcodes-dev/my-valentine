@@ -4,7 +4,7 @@ export const PASSWORD_HINTS = [
     "It's a very special day...",
     "Think about when we first met (or started dating)...",
     "Format is DDMMYY...",
-    "Okay, it's literally 220823 bruh"
+    "Okay, bruh"
 ];
 
 export const ERRORS = {

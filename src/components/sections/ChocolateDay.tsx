@@ -9,7 +9,11 @@ import DecoratingStep from "@/components/ui/DecoratingStep";
 
 import NextDayLock from "@/components/sections/NextDayLock";
 
-export default function ChocolateDay() {
+interface ChocolateDayProps {
+    onComplete?: () => void;
+}
+
+export default function ChocolateDay({ onComplete }: ChocolateDayProps) {
     const [step, setStep] = useState<"INTRO" | "MELTING" | "POURING" | "DECORATING" | "LOCKED">("INTRO");
 
     return (
@@ -136,7 +140,10 @@ export default function ChocolateDay() {
                         exit={{ opacity: 0 }}
                         className="z-10 w-full"
                     >
-                        <DecoratingStep onComplete={() => setStep("LOCKED")} />
+                        <DecoratingStep onComplete={() => {
+                            if (onComplete) onComplete();
+                            else setStep("LOCKED");
+                        }} />
                     </motion.div>
                 )}
 
