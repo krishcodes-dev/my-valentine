@@ -16,10 +16,11 @@ import { ArrowRight } from "lucide-react";
 import TeddyDay from "@/components/sections/TeddyDay";
 
 import PromiseDay from "@/components/sections/PromiseDay";
+import HugDay from "@/components/sections/HugDay";
 
 export default function Home() {
-  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6'
-  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6'>('DAY3');
+  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7'
+  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7'>('DAY3');
   // State to hide nav during arcade game
   const [hideNav, setHideNav] = useState(false);
 
@@ -44,6 +45,7 @@ export default function Home() {
     if (day === 4) setViewState('DAY4');
     if (day === 5) setViewState('DAY5');
     if (day === 6) setViewState('DAY6');
+    if (day === 7) setViewState('DAY7');
   };
 
   const getCurrentDay = () => {
@@ -53,6 +55,7 @@ export default function Home() {
     if (viewState === 'DAY4') return 4;
     if (viewState === 'DAY5') return 5;
     if (viewState === 'DAY6') return 6;
+    if (viewState === 'DAY7') return 7;
     return 1;
   };
 
@@ -64,7 +67,7 @@ export default function Home() {
       )}
 
       {/* Show Nav only when unlocked and not explicitly hidden */}
-      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE' || viewState === 'DAY3' || viewState === 'DAY4' || viewState === 'DAY5' || viewState === 'DAY6') && !hideNav && (
+      {(viewState === 'MAIN' || viewState === 'DAY2' || viewState === 'DAY2_COMPLETE' || viewState === 'DAY3' || viewState === 'DAY4' || viewState === 'DAY5' || viewState === 'DAY6' || viewState === 'DAY7') && !hideNav && (
         <DaysNav currentDay={getCurrentDay()} onNavigate={handleNav} />
       )}
 
@@ -171,9 +174,21 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 bg-black"
+        >
+          <HugDay onComplete={() => setViewState('DAY7')} />
+        </motion.div>
+      )}
+
+      {viewState === 'DAY7' && (
+        <motion.div
+          key="day7"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="absolute inset-0 z-50 bg-romantic-dark"
         >
-          <NextDayLock unlockDate="2026-02-12T00:00:00+05:30" />
+          <NextDayLock unlockDate="2026-02-13T00:00:00+05:30" />
         </motion.div>
       )}
     </main>

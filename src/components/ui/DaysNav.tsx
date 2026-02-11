@@ -14,7 +14,7 @@ const DAYS = [
     { id: 3, label: "Chocolate Day", locked: false },
     { id: 4, label: "Teddy Day", locked: false },
     { id: 5, label: "Promise Day", locked: false },
-    { id: 6, label: "Hug Day", locked: true },
+    { id: 6, label: "Hug Day", locked: false },
     { id: 7, label: "Kiss Day", locked: true },
     { id: 8, label: "Valentine's", locked: true },
 ];
