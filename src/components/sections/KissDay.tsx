@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, useSpring, Variants, useMotionValueEvent } from "framer-motion";
-import { Laugh } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, Variants, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { Laugh, MoveDown } from "lucide-react";
 
 interface KissDayProps {
     onComplete?: () => void;
@@ -20,24 +20,25 @@ const TypewriterText = ({ text, className = "", delay = 0, speed = 0.05 }: Typew
     // Split text into words for smoother/performant animation than characters
     const words = text.split(" ");
 
-    const containerVariants = {
+    // Explicitly type variants
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.12, // Stagger per word
+                staggerChildren: 0.12,
                 delayChildren: delay
             }
         }
     };
 
-    const childVariants = {
+    const childVariants: Variants = {
         hidden: { opacity: 0, y: 5 },
         visible: {
             opacity: 1,
             y: 0,
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 damping: 12,
                 stiffness: 100
             }
@@ -49,7 +50,7 @@ const TypewriterText = ({ text, className = "", delay = 0, speed = 0.05 }: Typew
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-10%" }} // Only animate once
+            viewport={{ once: true, margin: "-10%" }}
             className={className}
         >
             {words.map((word, index) => (
@@ -110,11 +111,18 @@ const Confetti = () => {
 export default function KissDay({ onComplete }: KissDayProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [autoScrollStarted, setAutoScrollStarted] = useState(false);
+    const [autoScrollPaused, setAutoScrollPaused] = useState(false);
+    const [showAutoScrollHint, setShowAutoScrollHint] = useState(false);
+    const hasPausedRef = useRef(false);
 
-    const { scrollYProgress, scrollY } = useScroll({
+    // Animation Progress (local to element view)
+    const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end end"]
     });
+
+    // Window Scroll Position (global pixels) - Necessary for robust scroll trigger
+    const { scrollY } = useScroll();
 
     const smoothProgress = useSpring(scrollYProgress, {
         stiffness: 40,
@@ -122,11 +130,28 @@ export default function KissDay({ onComplete }: KissDayProps) {
         restDelta: 0.001
     });
 
-    // Auto-scroll logic
+    // Auto-scroll Trigger Logic & Hint
     useMotionValueEvent(scrollY, "change", (latest) => {
-        // Start auto-scroll once user scrolls past 100px
-        if (latest > 100 && !autoScrollStarted) {
+        // Start auto-scroll once user scrolls past 50px
+        if (latest > 50 && !autoScrollStarted) {
             setAutoScrollStarted(true);
+            setShowAutoScrollHint(true);
+            setTimeout(() => setShowAutoScrollHint(false), 4000);
+        }
+    });
+
+    // Pause Auto-scroll at "And our first kiss"
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // Pause around 0.96 (where "And our first kiss" appears)
+        // We ensure it only happens once per session
+        if (latest > 0.95 && latest < 0.98 && !hasPausedRef.current && autoScrollStarted) {
+            hasPausedRef.current = true;
+            setAutoScrollPaused(true);
+
+            // Resume after 3 seconds so she can reminisce
+            setTimeout(() => {
+                setAutoScrollPaused(false);
+            }, 3000);
         }
     });
 
@@ -135,16 +160,20 @@ export default function KissDay({ onComplete }: KissDayProps) {
 
         const autoScroll = () => {
             if (autoScrollStarted) {
-                // Scroll speed: 1.5px per frame (approx 90px/sec at 60fps)
-                // This fits ~2500vh in about 3-4 minutes, which is good for reading
-                window.scrollBy(0, 1.8);
-
-                // Stop if we hit the bottom
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                // If paused, just keep loop alive but don't scroll
+                if (autoScrollPaused) {
+                    animationFrameId = requestAnimationFrame(autoScroll);
                     return;
                 }
 
-                animationFrameId = requestAnimationFrame(autoScroll);
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+                // Set speed to 1.5px per frame (smooth cinematic pace)
+                // 10px is too fast for reading; 1.5px is ~90px/sec which is comfortable
+                if (window.scrollY < maxScroll - 50) {
+                    window.scrollBy(0, 1.5);
+                    animationFrameId = requestAnimationFrame(autoScroll);
+                }
             }
         };
 
@@ -155,7 +184,69 @@ export default function KissDay({ onComplete }: KissDayProps) {
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
-    }, [autoScrollStarted]);
+    }, [autoScrollStarted, autoScrollPaused]);
+
+    // Audio Logic
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [hasPlayed, setHasPlayed] = useState(false);
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // Trigger audio at "But you said yes" (~0.75 progress)
+        // Ensure we don't start it if we are already at the very end (re-visit case)
+        if (latest > 0.75 && latest < 0.98 && !hasPlayed) {
+            if (!audioRef.current) {
+                audioRef.current = new Audio("/enchanted.mp3");
+                audioRef.current.volume = 0; // Start silent for fade-in
+                audioRef.current.loop = true; // Loop till end
+            }
+
+            // Only play if not already playing
+            if (audioRef.current.paused) {
+                audioRef.current.play().then(() => {
+                    setHasPlayed(true);
+                    // Fade in volume
+                    const fadeAudio = setInterval(() => {
+                        if (audioRef.current && audioRef.current.volume < 0.8) { // Max volume 0.8
+                            audioRef.current.volume = Math.min(0.8, audioRef.current.volume + 0.1);
+                        } else {
+                            clearInterval(fadeAudio);
+                        }
+                    }, 200);
+                }).catch(e => console.log("Audio play failed:", e));
+            }
+        }
+
+        // Stop audio when reaching the end (~0.99 progress)
+        if (latest >= 0.99 && audioRef.current && !audioRef.current.paused) {
+            const audio = audioRef.current;
+            // Quick fade out
+            const fadeOut = setInterval(() => {
+                if (audio.volume > 0.1) {
+                    audio.volume -= 0.1;
+                } else {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    clearInterval(fadeOut);
+                }
+            }, 100);
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                const audio = audioRef.current;
+                const fadeOut = setInterval(() => {
+                    if (audio.volume > 0.1) {
+                        audio.volume -= 0.1;
+                    } else {
+                        audio.pause();
+                        clearInterval(fadeOut);
+                    }
+                }, 100);
+            }
+        };
+    }, []);
 
     // ------------------------------------------------------------------
     // BACKGROUND TIMELINE (0.0 - 1.0)
@@ -172,7 +263,7 @@ export default function KissDay({ onComplete }: KissDayProps) {
     const landingOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
     const scrollIndicatorOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
 
-    // Opacity Transforms for sections (to hide/show containers)
+    // Opacity Transforms for sections
     const t1 = useTransform(smoothProgress, [0.12, 0.13, 0.17, 0.18], [0, 1, 1, 0]);
     const t2 = useTransform(smoothProgress, [0.19, 0.20, 0.24, 0.25], [0, 1, 1, 0]);
     const t3a = useTransform(smoothProgress, [0.26, 0.27, 0.31, 0.32], [0, 1, 1, 0]);
@@ -203,6 +294,31 @@ export default function KissDay({ onComplete }: KissDayProps) {
 
     return (
         <div ref={containerRef} className="relative h-[2500vh] bg-black">
+            {/* Auto-scroll Hint Overlay */}
+            <AnimatePresence>
+                {showAutoScrollHint && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.8 }}
+                        className="fixed bottom-[15vh] left-0 right-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+                    >
+                        <div className="bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 shadow-2xl flex items-center gap-3">
+                            <motion.div
+                                animate={{ y: [0, 3, 0] }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <MoveDown className="w-4 h-4 text-rose-200/80" />
+                            </motion.div>
+                            <span className="text-white/80 font-light tracking-widest text-xs uppercase">
+                                Sit Back & let it flow
+                            </span>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
 
                 {/* --- BACKGROUNDS --- */}
@@ -272,7 +388,7 @@ export default function KissDay({ onComplete }: KissDayProps) {
                     </div>
                 </motion.div>
 
-                {/* SCROLL INDICATOR */}
+                {/* SCROLL INDICATOR (Only visible when starting) */}
                 <motion.div
                     style={{ opacity: scrollIndicatorOpacity }}
                     className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-30"
@@ -296,11 +412,11 @@ export default function KissDay({ onComplete }: KissDayProps) {
 
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <motion.div style={{ opacity: t2 }} className="space-y-4">
-                            <TypewriterText text="Almost three years ago…" className="text-xl md:text-3xl font-serif text-white/90" />
-                            <TypewriterText text="Two nervous kids closed a long distance gap." className="text-xl md:text-3xl font-serif text-white/90" delay={0.5} />
-                            <TypewriterText text="300+ kilometers from my side." className="text-xl md:text-3xl font-serif text-white/90" delay={1.5} />
-                            <TypewriterText text="20 minutes from yours." className="text-xl md:text-3xl font-serif text-white/90" delay={2.5} />
-                            <TypewriterText text="And it still felt like the longest walk of our lives." className="text-xl md:text-3xl font-serif text-white/90" delay={3.5} />
+                            <TypewriterText text="Almost three years ago…" />
+                            <TypewriterText text="Two nervous kids closed a long distance chapter." delay={0.5} />
+                            <TypewriterText text="I travelled to you because you were worth it." delay={1.5} />
+                            <TypewriterText text="You travelled not knowing what would change." delay={2.5} />
+                            <TypewriterText text="And that day rewrote my life." delay={3.5} />
                         </motion.div>
                     </div>
 
@@ -309,7 +425,8 @@ export default function KissDay({ onComplete }: KissDayProps) {
                         <motion.div style={{ opacity: t3a }} className="space-y-4">
                             <TypewriterText text="I was starving." className="text-xl md:text-3xl font-serif text-white/90" />
                             <TypewriterText text="Not just for food;" className="text-xl md:text-3xl font-serif text-white/90" delay={0.5} />
-                            <TypewriterText text="but for the moment I'd been waiting for all day." className="text-xl md:text-3xl font-serif text-white/90" delay={1.5} />
+                            <TypewriterText text="but for the moment I'd been waiting and planning for all week." className="text-xl md:text-3xl font-serif text-white/90" delay={1.5} />
+
                         </motion.div>
                     </div>
 
@@ -410,6 +527,16 @@ export default function KissDay({ onComplete }: KissDayProps) {
                                 style={{ y: polaroidY, opacity: polaroidOpacity }}
                                 className="relative pointer-events-auto transform rotate-[-3deg] hover:rotate-[-1deg] transition-all duration-700 ease-out z-20 flex-shrink-0"
                             >
+                                {/* Big Kiss Emoji */}
+                                <motion.div
+                                    initial={{ scale: 0, rotate: -45 }}
+                                    whileInView={{ scale: 1, rotate: -15 }}
+                                    transition={{ type: "spring" as const, bounce: 0.5, delay: 0.5 }}
+                                    className="absolute -top-16 -left-16 text-9xl z-50 drop-shadow-2xl filter brightness-110"
+                                >
+                                    💋
+                                </motion.div>
+
                                 <div className="bg-white p-4 pb-16 shadow-2xl max-w-[280px] md:max-w-xs mx-auto">
                                     <div className="aspect-[4/5] bg-black overflow-hidden relative transition-all duration-1000">
                                         <img
@@ -437,15 +564,17 @@ export default function KissDay({ onComplete }: KissDayProps) {
                             >
                                 <div className="space-y-4">
                                     <TypewriterText text="Some moments don't get photographed." className="text-white/80 font-serif text-2xl md:text-3xl italic leading-relaxed block" />
-                                    <TypewriterText text="They just live in your heart." className="text-white/60 font-light text-lg block" delay={1} />
+                                    {/* Updated: 10px font size */}
+                                    <TypewriterText text="They just live in your heart." className="text-white/60 font-light text-[10px] block" delay={1} />
                                     <TypewriterText text="But maybe… this one deserves a frame." className="text-white/90 font-serif text-xl md:text-2xl mt-4 block" delay={2} />
-                                    <TypewriterText text="Happy Kiss Day my baby lets makeout soon" className="text-white/90 font-serif text-xl md:text-2xl mt-4 block" delay={2} />
+                                    <TypewriterText text="Happy Kiss Day my baby(makeout when)" className="text-white/60 font-light text-[10px] block" delay={2} />
                                 </div>
 
                                 <div className="space-y-6 pt-4 border-t border-white/10">
                                     <div className="space-y-2">
                                         <TypewriterText text="We never really had a picture of that night." className="text-neutral-400 text-sm font-light block" delay={3} />
-                                        <TypewriterText text="Maybe it's time we do." className="text-rose-200/80 text-sm font-light italic block" delay={4} />
+                                        {/* Updated: 10px font size */}
+                                        <TypewriterText text="Maybe it's time we do." className="text-rose-200/80 text-[10px] font-light italic block" delay={4} />
                                     </div>
 
                                     <motion.div
