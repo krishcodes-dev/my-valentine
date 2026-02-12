@@ -17,10 +17,11 @@ import TeddyDay from "@/components/sections/TeddyDay";
 
 import PromiseDay from "@/components/sections/PromiseDay";
 import HugDay from "@/components/sections/HugDay";
+import KissDay from "@/components/sections/KissDay";
 
 export default function Home() {
-  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7'
-  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7'>('DAY3');
+  // States: 'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7' | 'DAY8'
+  const [viewState, setViewState] = useState<'LOCKED' | 'INTRO' | 'MAIN' | 'DAY2' | 'DAY2_COMPLETE' | 'DAY3' | 'DAY4' | 'DAY5' | 'DAY6' | 'DAY7' | 'DAY8'>('DAY3');
   // State to hide nav during arcade game
   const [hideNav, setHideNav] = useState(false);
 
@@ -46,6 +47,7 @@ export default function Home() {
     if (day === 5) setViewState('DAY5');
     if (day === 6) setViewState('DAY6');
     if (day === 7) setViewState('DAY7');
+    if (day === 8) setViewState('DAY8');
   };
 
   const getCurrentDay = () => {
@@ -56,6 +58,7 @@ export default function Home() {
     if (viewState === 'DAY5') return 5;
     if (viewState === 'DAY6') return 6;
     if (viewState === 'DAY7') return 7;
+    if (viewState === 'DAY8') return 8;
     return 1;
   };
 
@@ -186,9 +189,21 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          className="absolute inset-0 z-50 bg-black"
+        >
+          <KissDay onComplete={() => setViewState('DAY8')} />
+        </motion.div>
+      )}
+
+      {viewState === 'DAY8' && (
+        <motion.div
+          key="day8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="absolute inset-0 z-50 bg-romantic-dark"
         >
-          <NextDayLock unlockDate="2026-02-13T00:00:00+05:30" />
+          <NextDayLock unlockDate="2026-02-14T00:00:00+05:30" />
         </motion.div>
       )}
     </main>

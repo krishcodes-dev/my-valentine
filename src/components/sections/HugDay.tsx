@@ -25,38 +25,19 @@ export default function HugDay({ onComplete }: HugDayProps) {
                         <div className="w-96 h-96 bg-white/5 rounded-full blur-[100px]" />
                     </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 2 }}
-                        className="relative z-10 text-center space-y-8"
+
+
+                    <motion.button
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 3, duration: 2 }}
+                        onClick={() => setStarted(true)}
+                        className="mt-12 px-8 py-3 border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 rounded-full text-sm tracking-widest transition-all duration-500 relative z-20 pointer-events-auto cursor-pointer"
                     >
-                        <h1 className="text-4xl md:text-6xl font-serif text-amber-100 mb-8 drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]">
-                            Hug Day
-                        </h1>
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1.5, duration: 2 }}
-                            className="space-y-4"
-                        >
-                            <p className="text-lg text-neutral-400">Today isn't loud.</p>
-                            <p className="text-lg text-neutral-400">It's quiet.</p>
-                        </motion.div>
-
-                        <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 3, duration: 2 }}
-                            onClick={() => setStarted(true)}
-                            className="mt-12 px-8 py-3 border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 rounded-full text-sm tracking-widest transition-all duration-500 relative z-20 pointer-events-auto cursor-pointer"
-                        >
-                            Shall we?
-                        </motion.button>
+                        Shall we?
+                    </motion.button>
 
 
-                    </motion.div>
                 </motion.div>
             )}
 
