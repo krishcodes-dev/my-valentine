@@ -412,11 +412,11 @@ export default function KissDay({ onComplete }: KissDayProps) {
 
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <motion.div style={{ opacity: t2 }} className="space-y-4">
-                            <TypewriterText text="Almost three years ago…" />
-                            <TypewriterText text="Two nervous kids closed a long distance chapter." delay={0.5} />
-                            <TypewriterText text="I travelled to you because you were worth it." delay={1.5} />
-                            <TypewriterText text="You travelled not knowing what would change." delay={2.5} />
-                            <TypewriterText text="And that day rewrote my life." delay={3.5} />
+                            <TypewriterText text="Almost three years ago…" className="text-xl md:text-3xl font-serif text-white/90" />
+                            <TypewriterText text="Two nervous kids closed a long distance chapter." className="text-xl md:text-3xl font-serif text-white/90" delay={0.5} />
+                            <TypewriterText text="I travelled to you because you were worth it." className="text-xl md:text-3xl font-serif text-white/90" delay={1.5} />
+                            <TypewriterText text="You travelled not knowing what would change." className="text-xl md:text-3xl font-serif text-white/90" delay={2.5} />
+                            <TypewriterText text="And that day rewrote my life." className="text-xl md:text-3xl font-serif text-white/90" delay={3.5} />
                         </motion.div>
                     </div>
 
